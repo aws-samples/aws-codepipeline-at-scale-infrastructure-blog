@@ -1,0 +1,36 @@
+#-------------------------------------------------------------------------#
+# Global variables
+#-------------------------------------------------------------------------#
+namespace: cposs
+stacker_execution_profile: &stacker_execution_profile stacker_execution
+stacker_bucket: ""  # not using S3 buckets to store CloudFormation templates
+
+# any unique S3 bucket - suggestion: append your account id and region to the name
+s3_bucket_name: &s3_bucket_name cposssamples3bucket182743192031
+# cheapest EC2 instance for testing purposes
+ec2_instance_type: &ec2_instance_type t2.micro
+
+#-------------------------------------------------------------------------#
+# Stack Definitions (https://stacker.readthedocs.io/en/latest/config.html)
+#-------------------------------------------------------------------------#
+stacks:
+  - name: sample-s3-bucket
+    profile: *stacker_execution_profile
+    template_path: templates/s3-bucket-template.yaml
+    variables:
+      S3BucketName: *s3_bucket_name
+
+  - name: sample-ec2-iam-role
+    profile: *stacker_execution_profile
+    template_path: templates/ec2-role-template.yaml
+    variables:
+      S3BucketName: ${output sample-s3-bucket::S3BucketName}
+
+  - name: sample-ec2-instance
+    profile: *stacker_execution_profile
+    template_path: templates/ec2-template.yaml
+    variables:
+      InstanceType: *ec2_instance_type
+      S3BucketName: ${output sample-s3-bucket::S3BucketName}
+      EC2IamRoleName: ${output sample-ec2-iam-role::EC2RoleName}
+

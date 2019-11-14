@@ -1,0 +1,61 @@
+
+
+AWSTemplateFormatVersion: 2010-09-09
+Description: Creates a cross-account IAM role for Stacker to be able to deploy stacks in this account
+
+Parameters:
+
+  Namespace:
+    Description: A prefix used to name provisioned resources
+    Type: String
+    Default: cposs
+
+  StackerMasterAccountId:
+    Description: Account ID where the StackerMasterRole lives
+    Type: String
+
+Resources:
+
+  StackerExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${Namespace}-StackerExecutionRole"
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Action:
+              - 'sts:AssumeRole'
+            Effect: Allow
+            Principal:
+                AWS: !Sub "arn:aws:iam::${StackerMasterAccountId}:root"
+      Path: /
+
+  StackerExecutionRolePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub "${Namespace}-StackerExecutionRolePolicy"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Effect: "Allow"
+          Action:
+            - cloudformation:*
+            - ec2:*
+            - s3:*
+            - iam:*
+            - ssm:GetParameters
+          Resource: "*"
+      Roles:
+        - !Ref StackerExecutionRole
+
+Outputs:
+
+  StackerExecutionRoleArn:
+    Value: !GetAtt StackerExecutionRole.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-stacker-execution-role-arn"
+
+  StackerExecutionRoleName:
+    Value: !Ref StackerExecutionRole
+    Export:
+      Name: !Sub "${AWS::StackName}-stacker-execution-role-name"

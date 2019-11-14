@@ -1,0 +1,9 @@
+[profile stacker_master]
+role_arn = arn:aws:iam::123456789012:role/cposs-StackerMasterRole
+credential_source = EcsContainer
+role_session_name = stacker_master_role_session
+
+[profile stacker_execution]
+role_arn = arn:aws:iam::123456789012:role/cposs-StackerExecutionRole
+source_profile = stacker_master
+

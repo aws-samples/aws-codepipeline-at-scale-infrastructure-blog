@@ -1,0 +1,22 @@
+version: 0.2
+
+env:
+  variables:
+    stacker_master_profile_name: "stacker_master"
+    stacker_profiles_file: "stacker-profiles"
+    stacker_orchestration_file: "stacker-config.yaml"
+
+phases:
+
+  pre_build:
+    commands:
+      - pip install --upgrade pip
+      - pip install stacker==1.7.0
+      - env && ls -lha && python --version
+
+  build:
+    commands:
+      - export AWS_CONFIG_FILE="${CODEBUILD_SRC_DIR}/${StackerConfigPath}/${stacker_profiles_file}"
+      - echo "AWS_CONFIG_FILE=${AWS_CONFIG_FILE}"
+      - stacker build "${CODEBUILD_SRC_DIR}/${StackerConfigPath}/${stacker_orchestration_file}" --profile $stacker_master_profile_name --recreate-failed
+

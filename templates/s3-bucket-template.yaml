@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Creates an encrypted non-public S3 bucket to store CI/CD artifacts
+
+Parameters:
+
+  S3BucketName:
+    Type: String
+    Description: Unique name to assign to S3 bucket
+
+Resources:
+
+  Bucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    Properties:
+      BucketName: !Ref S3BucketName
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+         BlockPublicAcls: true
+         IgnorePublicAcls: true
+         BlockPublicPolicy: true
+         RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref Bucket
+      PolicyDocument:
+        Statement:
+          - Effect: Deny
+            Action:
+              - "s3:*"
+            Resource:
+             - !Sub "arn:aws:s3:::${S3BucketName}/*"
+            Principal: "*"
+            Condition:
+              Bool:
+                aws:SecureTransport: false
+
+Outputs:
+
+  S3BucketArn:
+    Value: !GetAtt Bucket.Arn
+
+  S3BucketName:
+    Value: !Ref Bucket
+

@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Template to provision an EC2 service role'
+
+Parameters:
+  S3BucketName:
+    Description: S3 bucket name
+    Type: String
+
+Resources:
+  EC2Role:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ec2.amazonaws.com
+          Action:
+          - sts:AssumeRole
+  EC2S3Policy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: upload-to-s3
+      PolicyDocument:
+        Statement:
+        - Effect: Allow
+          Action:
+          - s3:PutObject
+          Resource:
+          - !Sub "arn:aws:s3::*:${S3BucketName}/*"
+      Roles:
+      - !Ref EC2Role
+
+Outputs:
+  EC2RoleName:
+    Description: EC2 service role Name
+    Value: !Ref EC2Role
