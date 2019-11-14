@@ -7,12 +7,6 @@ The included sample files provide instructions on how to deploy:
 * An AWS CodePipeline pipeline to provision infrastructure as code using open source tools
 * An AWS Identity and Access Management (IAM) role required by Stacker to deploy to these AWS resources: Amazon Elastic Compute Cloud (EC2), Simple Storage Service (S3) and IAM.
 
-
-
-High Level Architecture 
-
-![pipeline_diagram.pdf](https://github.com/aws-samples/aws-codepipeline-at-scale-infrastructure-blog/tree/master/blog)
-
 Pre-requisites:
 
 * Git client (https://git-scm.com/downloads) 
