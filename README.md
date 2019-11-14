@@ -11,7 +11,7 @@ The included sample files provide instructions on how to deploy:
 
 High Level Architecture 
 
-[Image: image-15.png]
+![pipeline_diagram.pdf](https://github.com/aws-samples/aws-codepipeline-at-scale-infrastructure-blog/tree/master/blog)
 
 Pre-requisites:
 
